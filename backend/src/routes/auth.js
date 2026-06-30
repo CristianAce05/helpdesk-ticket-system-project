@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
 
   const { data, error } = await supabase
     .from('users')
-    .insert([{ email, password_hash: passwordHash, name, role }])
+    .insert([{ email, password: passwordHash, name, role }])
     .select('id, email, name, role')
     .single();
 
@@ -44,7 +44,7 @@ router.post('/login', async (req, res) => {
 
   const { data: user, error } = await supabase
     .from('users')
-    .select('id, email, name, role, password_hash')
+    .select('id, email, name, role, password')
     .eq('email', email)
     .single();
 
@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
 
-  const passwordMatch = await bcrypt.compare(password, user.password_hash);
+  const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
